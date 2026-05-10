@@ -1,0 +1,11 @@
+[project]
+name = "vivid-api"
+version = "0.1.0"
+description = "Viral Video API"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.136.1",
+    "uvicorn[standard]>=0.46.0",
+    "yt-dlp>=2026.3.17",
+]
