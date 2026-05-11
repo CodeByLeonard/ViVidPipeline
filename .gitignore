@@ -1,1 +1,66 @@
-.idea
+# =========================
+# FRONTEND
+# =========================
+
+# Logs
+frontend/logs
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+frontend/public/test/*
+
+frontend/node_modules
+frontend/dist
+frontend/.vite
+frontend/.idea
+frontend/dist-ssr
+*/*.local
+
+# Editor directories and files
+*/.vscode/*
+*/!.vscode/extensions.json
+*/.idea
+*/.DS_Store
+*/*.suo
+*/*.ntvs*
+*/*.njsproj
+*/*.sln
+*/*.sw?
+
+
+# =========================
+# BACKEND
+# =========================
+
+api/downloads/*
+api/extracted/*
+api/output/*
+api/uploads/*
+
+# Python-generated files
+api/__pycache__/
+api/app/routes/__pycache__
+api/*.py[oc]
+api/build/
+api/dist/
+api/wheels/
+api/media/downloads/*
+api/media/extracted/*
+api/media/output/*
+api/media/uploads/*
+*/*.egg-info
+
+# Virtual environments
+api/.venv
+
+
+# =========================
+# GENERAL
+# =========================
+.idea/
+.log
+.env
