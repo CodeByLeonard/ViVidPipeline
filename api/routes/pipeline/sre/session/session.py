@@ -1,9 +1,13 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from turtledemo.clock import current_day
+
+from routes.pipeline.sre.segmentation.segment import Segment
+
 
 class Clip:
-    def __init__(self, id, filepath, title, desc, likes, views):
-        self.id = id
+    def __init__(self, filepath, id, title, desc, likes, views):
         self.filepath = filepath
+        self.id = id
         self.title = title
         self.desc = desc
         self.likes = likes
@@ -31,7 +35,9 @@ class Original:
 @dataclass
 class Session:
     active: bool = False
+    stage: int = 0
     original: Original | None = None
     clip: Clip | None = None
+    clip_segments: dict[int, Segment] = field(default_factory=dict)
 
 current_session = Session()

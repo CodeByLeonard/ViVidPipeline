@@ -13,7 +13,7 @@ async def download_file(file: UploadFile = File(...)):
 
     extension = Path(str(file.filename)).suffix
 
-    rand_uuid = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode("utf-8").rstrip("=")[:10]
+    rand_uuid = base64.urlsafe_b64encode(uuid.uuid4().bytes).decode("utf-8").rstrip("=")[:11]
     path = f"cache/original_{rand_uuid}{extension}"
 
     with open(path, "wb") as f:

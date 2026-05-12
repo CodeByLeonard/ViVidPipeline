@@ -23,7 +23,7 @@ def handle_download(youtube_id: str):
     params: dict = {
         "overwrites": True,
         "nopart": True,
-        "format": "bestvideo+bestaudio/best",
+        "format": "bestvideo[vcodec^=avc1]+bestaudio/best",
         "merge_output_format": "mp4",
         "outtmpl": f"{cache}/clip_{youtube_id}.%(ext)s",
         "progress_hooks": [progress_hook],
@@ -39,8 +39,8 @@ def handle_download(youtube_id: str):
     if result is not None:
         info = result["info_dict"]
         clip = Clip(
-            info["id"],
             filename,
+            info["id"],
             info["title"],
             info["description"],
             info["like_count"],

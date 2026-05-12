@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from routes.pipeline.sre.session.handler import router as session_handler
 from routes.pipeline.sre.input.handler import router as input_handler
+from routes.pipeline.sre.segmentation.handler import router as segmentation_handler
 
 router = APIRouter(prefix="/sre")
 
@@ -20,3 +21,5 @@ desc = {
 router.include_router(session_handler)
 
 router.include_router(input_handler)
+
+router.include_router(segmentation_handler)

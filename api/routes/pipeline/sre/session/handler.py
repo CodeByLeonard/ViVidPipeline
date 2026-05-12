@@ -14,6 +14,7 @@ async def initialize():
         return {"success": False, "message": "Clip or Original have not been set yet!"}
 
     current_session.active = True
+    current_session.stage = 1
     return {"success": True, "current_session": current_session}
 
 def safe_delete(path: Path):
