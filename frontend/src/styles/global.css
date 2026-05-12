@@ -14,7 +14,11 @@ body,
 }
 
 body {
-    background: #0b0f14;
+    background:
+            radial-gradient(circle at 18% 28%, rgba(255, 255, 255, 0.08), transparent 100%),
+            radial-gradient(circle at 82% 72%, rgba(140, 20, 20, 0.18), transparent 38%),
+            linear-gradient(to bottom right, #0b0f14, #081018);
+
     color: #e5e7eb;
     font-family: Inter, sans-serif;
     overflow: hidden;

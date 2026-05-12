@@ -1,5 +1,5 @@
 import {type ReactNode, useState} from "react";
-import {initializeSession, resetSession} from "../modules/BackendHelper.tsx";
+import {initializeSession, resetSession, type SessionInitializer} from "../modules/BackendHelper.tsx";
 import {useAppContext} from "../context/AppContext.tsx";
 
 export default function Navigation({navItems}: {navItems: string[] }) {
@@ -14,6 +14,7 @@ export default function Navigation({navItems}: {navItems: string[] }) {
     )
 }
 
+const buttonsClickable = true
 const glassPanel = "bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
 const headerSpacing = "relative flex items-center px-6"
 const headerElement = "flex items-center gap-3"
@@ -23,14 +24,14 @@ function Header({children}: { children: ReactNode }) {
 }
 
 function Left() {
-    const orb = "w-8 h-8 rounded-lg bg-linear-to-br from-cyan-400 to-blue-500 shadow-lg shadow-cyan-500/20"
     const leftModule = `${headerElement} z-10`
+    const orb = "w-8 h-8 rounded-lg bg-linear-to-br from-gray-200 to-red-500 shadow-lg shadow-red-500/20" //from-cyan-400 to-blue-500 shadow-cyan-500/20"
     return (
         <div className={leftModule}>
             <div className={orb}/>
             <div className="flex flex-col">
-                <span className="text-sm text-zinc-400">Audio Engineering</span>
-                <span className="text-white font-semibold tracking-wide">Reconstruction Suite</span>
+                <span className="text-sm text-zinc-400">ViVidPipeline</span>
+                <span className="text-white font-semibold tracking-wide">Shorts Reverse Engineering</span>
             </div>
         </div>
     )
@@ -42,16 +43,14 @@ function Center({navItems}: {navItems: string[]}) {
     return (
         <nav className={centerModule}>
             {navItems.map((item) => (
-                <NavButton key={item} label={item} active={currentPage === item} onClick={() => setCurrentPage(item)}/>
+                <NavButton key={item} label={item} active={currentPage === item}
+                onClick={(buttonsClickable ? () => {setCurrentPage(item)} : () => {})}/>
             ))}
         </nav>
     )
 }
 
 function Right() {
-    const [loading, setLoading] = useState(false)
-    const { setCurrentPage, youtubeId, file} = useAppContext()
-
     const rightModule = `${headerElement} ml-auto z-10`
 
     const initializeGlassPanel = "bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
@@ -61,26 +60,42 @@ function Right() {
     const resetGlassPanel = "bg-red-500/5 backdrop-blur-xl border border-white/10 shadow-[0_4px_32px_rgba(140,0,0,0.35)]"
     const resetButton = `px-4 py-2 rounded-xl ${resetGlassPanel} hover:bg-red-500/10 text-red-200 text-sm transition`
 
+    const [loading, setLoading] = useState(false)
+    const { currentPage, setCurrentPage, original_file, setOriginalFile, clip_file, setClipFile } = useAppContext()
+    const { youtubeId, file } = useAppContext()
+    const initializer: SessionInitializer = {
+        youtubeId: youtubeId,
+        file: file,
+        setLoading: setLoading,
+        setCurrentPage: setCurrentPage,
+        setOriginalFile: setOriginalFile,
+        setClipFile: setClipFile,
+    }
+
     return (
         <div className={rightModule}>
-            <button onClick={() => initializeSession({youtubeId, file, setLoading, setCurrentPage})}
-                    className={initializeButton + (loading ? " " + disabledButton : " hover:bg-zinc-700/40")}
-                    disabled={loading}>
-                {loading ? "Initializing Session" : "Initialize Session"}
-            </button>
-            <button onClick={resetSession} className={resetButton}> Reset Session </button>
+            { currentPage == "Input"
+                ? <button onClick={() => initializeSession(initializer)}
+                            className={initializeButton + (loading ? " " + disabledButton : " hover:bg-zinc-700/40")}
+                            disabled={loading}>
+                      {loading ? "Initializing Session" : "Initialize Session"}
+                  </button>
+                :
+                <>
+                    <button className={initializeButton}>Clip: {clip_file}</button>
+                    <button className={initializeButton}>Original: {original_file}</button>
+                    <button onClick={resetSession} className={resetButton}> Reset Session </button>
+                </>
+            }
         </div>
     )
 }
 
-function NavButton({label, active = false, onClick}: {
-    label: string
-    active?: boolean
-    onClick?: () => void
-})
-{
+
+function NavButton({label, active = false, onClick}: { label: string, active?: boolean, onClick?: () => void }) {
     const activeStyles = `bg-white/10 text-white shadow-lg`
     const inactiveStyles = `text-zinc-400 hover:text-white hover:bg-white/5`
     const navButton = `px-4 py-2 rounded-xl text-sm transition-all ${active ? activeStyles : inactiveStyles}`
-    return <button onClick={onClick} className={navButton}>{label}</button>
+    if (buttonsClickable) return <button onClick={onClick} className={navButton}>{label}</button>
+    else return <button className={`px-4 py-2 rounded-xl text-sm transition-all ${active ? activeStyles : `text-zinc-400`}`}>{label}</button>
 }

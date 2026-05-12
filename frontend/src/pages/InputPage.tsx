@@ -4,12 +4,11 @@ import type {DragEvent, ChangeEventHandler, ChangeEvent} from "react";
 import {downloadYouTubeVideo} from "../modules/BackendHelper.tsx";
 import {useAppContext} from "../context/AppContext.tsx";
 
-const column = "rounded-2xl border border-dashed border-white/10 bg-white/3 backdrop-blur-xl p-6 flex flex-col"
+const column = "rounded-2xl border border-dashed border-white/20 bg-white/5 backdrop-blur-xl p-6 flex flex-col"
 
-export default function InputPage(
-) {
+export default function InputPage() {
     const { file, setFile  } = useAppContext()
-    const container_outer = "w-full h-full flex items-center justify-center p-10"
+    const container_outer = "w-full h-full flex items-center justify-center p-10 "
     const container_inner = "w-[96%] h-[92%] flex gap-8"
     return (
         <div className={container_outer}>
@@ -25,14 +24,16 @@ function YouTubeCard() {
     const { youtubeId, setYoutubeId} = useAppContext()
     const [videoSrc, setVideoSrc] = useState<string>("")
     const [loading, setLoading] = useState(false)
+    const column = "rounded-2xl border border-dashed border-white/10 " +
+        "bg-white/3 backdrop-blur-xl p-6 flex flex-col min-h-0"
     return (
         <div className={`${column} flex-1`}>
-            <Title title="YouTube Source Eon2EqOfGbs" subtitle="Paste a Shorts or video ID (not the URL)"/>
+            <Title title="YouTube Source Eon2EqOfGbs" subtitle="Scrape a Short directly from YouTube!"/>
             <div className="flex gap-3">
                 <InputID value={youtubeId} onChange={(e) => setYoutubeId(e.target.value)}/>
                 <DownloadButton onClick={() => downloadYouTubeVideo({youtubeId, setLoading, setVideoSrc})} loading={loading}/>
             </div>
-            <VideoPreviewCard title="Downloaded video preview - downloaded by backend!" src={videoSrc} />
+            <VideoPreviewCard title={((videoSrc == "") ? "Video Preview — Backend Connected" : videoSrc)} src={videoSrc} />
         </div>
     )
 }
@@ -41,7 +42,7 @@ function OriginalMediaCard({file, setFile}: {file: File | null, setFile: (file: 
     const [videoUrl, setVideoUrl] = useState<string>("")
     const handleFile = (file: File) => {
         setFile(file)
-        const url = URL.createObjectURL(file)
+        const url = URL.createObjectURL(file) //e.g. blob:http://localhost:5173/ec6773ec-65a3-4032-a448-0386236ad0d6
         setVideoUrl(url)
     }
     return (
@@ -50,7 +51,7 @@ function OriginalMediaCard({file, setFile}: {file: File | null, setFile: (file: 
                 <div> <Title title="Original Media" subtitle="Movie / TV / full-length source"/> </div>
                 <DropZone onFileSelect={handleFile} selectedFile={file}/>
             </div>
-            <VideoPreviewCard title="Original preview - local preview only!" src={videoUrl} />
+            <VideoPreviewCard title={((videoUrl == "") ? "Video Preview — Local Browser Only" : videoUrl)} src={videoUrl} />
         </div>
     )
 }
@@ -96,13 +97,13 @@ function Title({title, subtitle}: {title: string, subtitle: string }) {
 }
 
 function InputID({value, onChange}: {value: string, onChange: ChangeEventHandler<HTMLInputElement>}) {
-    const inputClassName = "flex-1 px-4 py-3 rounded-xl bg-zinc-900/40 border border-dashed border-zinc-700 " +
+    const inputClassName = "flex-1 px-4 py-3 rounded-xl bg-zinc-900/60 border border-dashed border-zinc-700 " +
         "text-zinc-200 placeholder:text-zinc-500 outline-none focus:border-zinc-500 transition"
     return <input type="text" value={value} onChange={onChange} placeholder="ID in https://youtube.com/shorts/ID" className={inputClassName}/>
 }
 
 function DownloadButton({ onClick, loading }: { onClick: () => void, loading?: boolean }) {
-    const buttonClassName = "px-5 py-3 rounded-xl bg-zinc-800/60 border border-zinc-700 border-dashed text-zinc-200 transition"
+    const buttonClassName = "px-5 py-3 rounded-xl bg-zinc-900/60 border border-zinc-700 border-dashed text-zinc-200 transition"
     const disabledClassName = "opacity-50 cursor-not-allowed hover:bg-zinc-800/60"
     return (
         <button onClick={onClick} disabled={loading} className={buttonClassName + (loading ? " " + disabledClassName : " hover:bg-zinc-700/40")}>

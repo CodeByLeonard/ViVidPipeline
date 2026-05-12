@@ -9,27 +9,33 @@ type AppContextType = {
 
     file: File | null
     setFile: (file: File | null) => void
+
+    clip_file: string
+    setClipFile: (path: string) => void
+
+    original_file: string
+    setOriginalFile: (path: string) => void
 }
 
 const AppContext = createContext<AppContextType | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }) {
     const [currentPage, setCurrentPage] = useState("Input")
-
     const [youtubeId, setYoutubeId] = useState("")
     const [file, setFile] = useState<File | null>(null)
+
+    const [clip_file, setClipFile] = useState("Session not initialized")
+    const [original_file, setOriginalFile] = useState("Session not initialized")
 
     return (
         <AppContext.Provider
             value={{
-                currentPage,
-                setCurrentPage,
+                currentPage, setCurrentPage,
+                youtubeId, setYoutubeId,
+                file, setFile,
 
-                youtubeId,
-                setYoutubeId,
-
-                file,
-                setFile,
+                clip_file, setClipFile,
+                original_file, setOriginalFile
             }}
         >
             {children}

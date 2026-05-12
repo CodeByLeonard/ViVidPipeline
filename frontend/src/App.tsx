@@ -10,7 +10,7 @@ export default function App() {
     const navItems: string[] = [ "Input", "Scope", "Matching", "Output" ]
 
     return (
-        <div className="w-screen h-screen bg-[#0b0f14] overflow-hidden relative">
+        <div className="w-screen h-screen overflow-hidden relative">
             <Navigation navItems={navItems}/>
 
             <main className="absolute inset-0 pt-20">
