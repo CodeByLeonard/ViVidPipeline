@@ -18,7 +18,7 @@ app.include_router(pipeline_router)
 
 @app.get("/")
 def read_root():
-    return {"Root directory found": "/"}
+    return {"debug": False, "Root directory found": "/"}
 
 def create_debug_app():
     debug_app = FastAPI()

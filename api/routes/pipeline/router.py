@@ -1,9 +1,14 @@
 from fastapi import APIRouter
 
-from routes.pipeline.reconstruct.handler import router as reconstruct_router
-from routes.pipeline.session.handler import router as session_router
+from routes.pipeline.sre.router import router as sre_router
+from routes.pipeline.sre.router import desc as sre_desc
 
 router = APIRouter(prefix="/pipeline")
+router.include_router(sre_router)
 
-router.include_router(reconstruct_router)
-router.include_router(session_router)
+@router.get("/")
+def read_item():
+    list = {
+        "sre": sre_desc,
+    }
+    return list
