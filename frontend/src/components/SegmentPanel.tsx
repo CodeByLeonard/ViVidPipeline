@@ -33,7 +33,6 @@ export default function SegmentPanel({
             bg-zinc-900/30
             p-5
         ">
-
             {/* HEADER */}
             <div className="flex items-center justify-between mb-5">
 
@@ -65,8 +64,8 @@ export default function SegmentPanel({
 
             </div>
 
-            {/* SEGMENTS */}
-            <div className="grid grid-cols-2 gap-4">
+            {/* SEGMENTS - USED TO BE GRID COLS 2 */}
+            <div className="grid grid-cols-1 gap-4">
 
                 {segments.map((segment, index) => (
                     <div

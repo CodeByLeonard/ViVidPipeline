@@ -106,5 +106,7 @@ def main():
 
     rebuild_original(super_segments, scope, original_mono_filepath)
 
+    return super_segments.__len__()
+
 if __name__ == "__main__":
     main()

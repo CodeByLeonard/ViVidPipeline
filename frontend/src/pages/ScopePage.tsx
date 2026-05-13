@@ -14,22 +14,12 @@ export default function ScopePage() {
 
     const addSegment = () => {
         if (segments.length >= 4) return;
-
-        setSegments(prev => [
-            ...prev,
-            {
-                id: Date.now(),
-                start: null,
-                end: null
-            }
-        ]);
+        setSegments(prev => [...prev, { id: Date.now(), start: null, end: null }]);
     };
 
     const setStart = (id: number) => {
         if (!originalVideoRef.current) return;
-
         const current = originalVideoRef.current.currentTime;
-
         setSegments(prev =>
             prev.map(segment =>
                 segment.id === id
@@ -41,9 +31,7 @@ export default function ScopePage() {
 
     const setEnd = (id: number) => {
         if (!originalVideoRef.current) return;
-
         const current = originalVideoRef.current.currentTime;
-
         setSegments(prev =>
             prev.map(segment =>
                 segment.id === id
@@ -52,8 +40,6 @@ export default function ScopePage() {
             )
         );
     };
-
-
 
     return (
         <div className="w-full h-full flex items-center justify-center p-8">

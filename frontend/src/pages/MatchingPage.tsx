@@ -1,6 +1,6 @@
 export default function MatchingPage() {
     return (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center p-8">
             {/* outer margin frame */}
             <div className="
                 w-[96%] h-[92%] rounded-2xl border border-dashed border-zinc-700 bg-white/3
