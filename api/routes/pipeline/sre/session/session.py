@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from turtledemo.clock import current_day
 
 from routes.pipeline.sre.segmentation.segment import Segment
 

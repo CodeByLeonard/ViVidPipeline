@@ -1,12 +1,6 @@
 import librosa
 import librosa.feature
 import numpy as np
-import matplotlib.pyplot as plt
-
-# sample_rate is how many samples per second, e.g. 16000
-# previously called DIVISOR, hop_length is how many samples we move forward per spectrogram frame
-# therefore time per frame = hop_length / sample_rate --> with 16000 and 512 we get about 31.25 frames per second
-# hop_length = 256 would be 2x more precise, but also much slower!
 
 class AudioSource:
     sample_rate = 16000
@@ -32,6 +26,43 @@ class AudioSource:
             spectrogram = librosa.feature.melspectrogram(y=self.waveform, sr=self.sample_rate, n_mels=n_mels)
             self.features[key] = librosa.power_to_db(spectrogram, ref=np.max)
         return self.features[key]
+
+class Scope:
+    def __init__(self, source: AudioSource, timestamps: list[dict]):
+        self.source = source
+        self.views = [AudioView(source, timestamp["start"], timestamp["end"]) for timestamp in timestamps]
+
+    def scope_to_source_time(self, scope_time: float):
+        current = 0.0
+        for view in self.views:
+            duration = view.duration()
+            if current <= scope_time < current + duration:
+                offset = scope_time - current
+                return view.start + offset
+            current += duration
+        return None
+
+    def duration(self):
+        return sum(view.duration() for view in self.views)
+
+    def get_waveform(self):
+        waveforms = [view.get_waveform() for view in self.views]
+        return np.concatenate(waveforms)
+
+    def get_mel_spectrogram(self, n_mels: int = AudioSource.n_mels):
+        spectrograms = [view.get_mel_spectrogram(n_mels) for view in self.views]
+        return np.concatenate(spectrograms, axis=1)
+
+class MatcherView:
+    def __init__(self, source: AudioSource):
+        self.source = source
+
+    def get_waveform(self):
+        return self.source.waveform[:]
+
+    def get_mel_spectrogram(self, n_mels: int=AudioSource.n_mels):
+        full = self.source.get_mel_spectrogram(n_mels)
+        return full[:, :]
 
 class AudioView:
     def __init__(self, source: AudioSource, start: float, end: float):
@@ -63,30 +94,6 @@ class AudioView:
     def get_mel_spectrogram_reverse(self):
         return self.get_mel_spectrogram()[:, ::-1]
 
-class Scope:
-    def __init__(self, original: AudioSource, original_start: float, original_end: float):
-        self.original = original
-        self.start = max(0, original_start)
-        self.end = min(original_end, original.duration())
-
-    def duration(self):
-        return self.end - self.start
-
-    def get_view(self):
-        return AudioView(self.original, self.start, self.end)
-
-    def get_mel_spectrogram(self):
-        return AudioView(self.original, self.start, self.end).get_mel_spectrogram()
-
-    def print_status(self):
-        print("\n--- SCOPE STATUS PRINT ---")
-        print(f"Original Source-path: {self.original.path}")
-        print(f"Original Start: {self.start}")
-        print(f"Original End: {self.end}")
-        print(f"Duration: {self.duration()}s")
-        print(f"Duration: {self.duration()/60:.0f}m {self.duration()%60}s")
-        print("--- SCOPE STATUS PRINT ---\n")
-
 class Segment:
     def __init__(self, clip_view: AudioView, original_view: AudioView):
         self.clip = clip_view
@@ -102,31 +109,36 @@ class Segment:
         print(f"Clip End: {self.clip.end}")
         print(f"Duration: {self.duration()}\n")
 
-class Session:
-    def __init__(self, original_path: str, clip_path: str):
-        self.original_source = AudioSource(original_path)
-        self.clip_source = AudioSource(clip_path)
+class SuperSegment:
+    def __init__(self, segments):
+        self.segments = segments
 
-        self.scope = None
-        self.segments = []
-        self.clip_cursor = 0.0
+    def ignored_duration(self):
+         return sum(
+             segment["ignored_offset"]
+             for segment in self.segments
+         )
 
-    def remaining_clip(self):
-        return AudioView(self.clip_source, self.clip_cursor, self.clip_source.duration())
+    def get_scope(self, source: AudioSource):
+        timestamps = []
+        for segment in self.segments:
+            timestamps.append({"start": segment["start"], "end": segment["end"]})
+        return Scope(source, timestamps)
 
-    def advance(self, seconds):
-        self.clip_cursor += seconds
+    def start(self):
+        return self.segments[0]["start"]
 
-    def add_segment(self, clip_start, clip_end, original_start, original_end):
-        segment = Segment(AudioView(self.clip_source, clip_start, clip_end), AudioView(self.original_source, original_start, original_end))
-        self.segments.append(segment)
+    def end(self):
+        return self.segments[-1]["end"]
 
-    def add_scope(self, original_start, original_end):
-        self.scope = Scope(self.original_source, original_start, original_end)
+    def duration(self):
+        return self.end() - self.start()
 
-    def print_status(self):
-        self.scope.print_status()
+    def corrected_duration(self):
+        return self.duration() + self.ignored_duration()
 
-        for i, segment in enumerate(self.segments):
-            print(f"\nSegment {i+1}:")
-            segment.print_status()
+    def print(self):
+        print("\n--------- SEGMENT PRINT ---------")
+        for index, segment in enumerate(self.segments):
+            print(f"Index {index}: {segment.__str__()}")
+        print("--------- SEGMENT PRINT ---------\n")
