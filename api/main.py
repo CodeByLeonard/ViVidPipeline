@@ -10,9 +10,13 @@ from pipelines.pipelines_router import router as pipelines_router
 
 app = FastAPI()
 
-cache = Path("./cache")
-if not cache.exists(): cache.mkdir()
-app.mount("/cache", StaticFiles(directory=cache), name="cache")
+sessions = Path("./sessions")
+if not sessions.exists(): sessions.mkdir()
+app.mount("/sessions", StaticFiles(directory=sessions), name="sessions")
+
+sessions_cache = Path("./sessions/cache")
+if not sessions_cache.exists(): sessions_cache.mkdir()
+app.mount("/cache", StaticFiles(directory=sessions_cache), name="sessions_cache")
 
 app.include_router(pipelines_router)
 

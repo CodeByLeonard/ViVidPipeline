@@ -13,3 +13,11 @@ router.include_router(preview_router)
 @router.get("/")
 def list_pipelines():
     return {"preview": preview_description, "sre": sre_description}
+
+@router.get("/reset")
+def reset_pipelines():
+    from pipelines.preview.preview_router import clear as clear_preview
+    clear_preview()
+    from proc.sre.session.paths import reset_workspace
+    reset_workspace()
+    return {}

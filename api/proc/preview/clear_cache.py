@@ -11,7 +11,7 @@ def safe_delete(path: Path):
         return{f"Failed to delete {path}: {e}"}
 
 def clear():
-    cache = Path("./cache")
+    cache = Path("./sessions/cache")
     if cache.exists():
         for item in cache.iterdir():
             safe_delete(item)

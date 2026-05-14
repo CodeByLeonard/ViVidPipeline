@@ -1,4 +1,4 @@
-from proc.segmentation.source import AudioSource, MatcherView, Scope
+from proc.sre.audio_matching.modules.source import AudioSource, MatcherView, Scope
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -58,10 +58,10 @@ def plot_match(output, original: MatcherView, clip: MatcherView, timestamp_start
 def plot_super_segment(super_segment, clip_source: AudioSource, original_source: Scope):
     fig, axes = plt.subplots(3, 1, figsize=(18, 10))
 
-    start = super_segment.segments[0]["start"]
-    end = super_segment.segments[-1]["end"]
-    clip_start = super_segment.segments[0]["clip_start"]
-    clip_end = super_segment.segments[-1]["clip_end"]
+    start = super_segment.segments[0].start
+    end = super_segment.segments[-1].end
+    clip_start = super_segment.segments[0].clip_start
+    clip_end = super_segment.segments[-1].clip_end
 
     clip_waveform = clip_source.waveform
     clip_times = np.linspace(0, clip_source.duration(), len(clip_waveform))
@@ -82,19 +82,19 @@ def plot_super_segment(super_segment, clip_source: AudioSource, original_source:
     fig.tight_layout()
     return fig
 
-def super_segments_status(super_segments, original_source, clip_source, scope):
+def super_segments_status(super_segments, clip_source, scope):
     def plot_separate():
         for index, super_segment in enumerate(super_segments):
             super_segment.print()
             fig = plot_super_segment(super_segment, clip_source, scope)
-            fig.savefig(f"cache/plot/super_segments/super_segment_{index}.png", dpi=300)
+            fig.savefig(f"sessions/sre/artifacts/super_segments/super_segment_{index}.png", dpi=300)
 
     def plot_together():
         waveforms = []
 
         for index, super_segment in enumerate(super_segments):
-            start = super_segment.segments[0]["start"]
-            end = super_segment.segments[-1]["end"]
+            start = super_segment.segments[0].start
+            end = super_segment.segments[-1].end
             super_waveform = cutout_waveform(scope.get_waveform(), start, end)
             waveforms.append(super_waveform)
 
@@ -116,7 +116,7 @@ def super_segments_status(super_segments, original_source, clip_source, scope):
 
 
         fig.tight_layout()
-        fig.savefig("cache/plot/super_segments/reconstruction_compare.png", dpi=300)
+        fig.savefig("sessions/sre/artifacts/super_segments/reconstruction_compare.png", dpi=300)
         plt.close(fig)
 
     plot_separate()

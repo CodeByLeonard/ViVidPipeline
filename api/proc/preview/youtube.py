@@ -6,11 +6,10 @@ from yt_dlp import YoutubeDL
 def is_valid_youtube_id(youtube_id: str) -> bool:
     return bool(re.compile(r"^[a-zA-Z0-9_-]{11}$").fullmatch(youtube_id))
 
-def handle_download(youtube_id: str):
+def download_youtube(youtube_id: str, path: str):
     if not (is_valid_youtube_id(youtube_id)):
         return {starlette.status.HTTP_400_BAD_REQUEST}
 
-    cache = Path("./cache")
     result = None
     def progress_hook(data):
         nonlocal result
@@ -23,16 +22,13 @@ def handle_download(youtube_id: str):
         "nopart": True,
         "format": "bestvideo[vcodec^=avc1]+bestaudio/best",
         "merge_output_format": "mp4",
-        "outtmpl": f"{cache}/{youtube_id}.%(ext)s",
+        "outtmpl": f"{path}",
         "progress_hooks": [progress_hook],
     }
 
     with YoutubeDL(params=params) as yt:
         info = yt.extract_info(f"https://youtube.com/watch?v={youtube_id}", download=True)
         filename = yt.prepare_filename(info)
-
-        if filename.endswith(".webm"):
-            filename = filename[:-5] + ".mp4"
 
     if result is not None:
         return {"success": True, "filepath": f"{filename}"}

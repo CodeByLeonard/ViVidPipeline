@@ -30,7 +30,7 @@ class AudioSource:
 class Scope:
     def __init__(self, source: AudioSource, timestamps: list[dict]):
         self.source = source
-        self.views = [AudioView(source, timestamp["start"], timestamp["end"]) for timestamp in timestamps]
+        self.views = [ AudioView(source, timestamp["start"], timestamp["end"]) for timestamp in timestamps ]
 
     def scope_to_source_time(self, scope_time: float):
         current = 0.0
@@ -115,21 +115,21 @@ class SuperSegment:
 
     def ignored_duration(self):
          return sum(
-             segment["ignored_offset"]
+             segment.ignored_offset
              for segment in self.segments
          )
 
     def get_scope(self, source: AudioSource):
         timestamps = []
         for segment in self.segments:
-            timestamps.append({"start": segment["start"], "end": segment["end"]})
+            timestamps.append({"start": segment.start, "end": segment.end})
         return Scope(source, timestamps)
 
     def start(self):
-        return self.segments[0]["start"]
+        return self.segments[0].start
 
     def end(self):
-        return self.segments[-1]["end"]
+        return self.segments[-1].end
 
     def duration(self):
         return self.end() - self.start()
@@ -142,3 +142,23 @@ class SuperSegment:
         for index, segment in enumerate(self.segments):
             print(f"Index {index}: {segment.__str__()}")
         print("--------- SEGMENT PRINT ---------\n")
+
+def set_scope(original_mono_filepath: str, clip_mono_filepath: str):
+    original_source = AudioSource(path=original_mono_filepath)
+    clip_source = AudioSource(path=clip_mono_filepath)
+
+    from proc.sre.audio_matching.scope import load_scope
+    scope_file = load_scope()
+    scope_segments = [ {"start": scope.start, "end": scope.end} for scope in scope_file.scopes ]
+    scope = Scope(original_source, scope_segments)
+    return original_source, clip_source, scope
+
+def fill_super_segments(super_segments):
+    from proc.sre.audio_matching.modules.matcher import load_matches
+    matches = load_matches()
+    current_super = []
+    for segment in matches.matches:
+        current_super.append(segment)
+        if not segment.back_link:
+            super_segments.append(SuperSegment(current_super))
+            current_super = []

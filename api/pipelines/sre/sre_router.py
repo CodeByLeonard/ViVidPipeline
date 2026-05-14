@@ -1,8 +1,10 @@
-from fastapi import APIRouter
+from pathlib import Path
 
-from pipelines.sre.session.handler import router as session_handler
-from pipelines.sre.input.handler import router as input_handler
-from pipelines.sre.segmentation.handler import router as segmentation_handler
+from fastapi import APIRouter, HTTPException
+from starlette.responses import FileResponse
+
+from pipelines.sre.session_handler import router as session_handler
+from pipelines.sre.audio_matching_handler import router as audio_matching_handler
 
 router = APIRouter(prefix="/sre")
 
@@ -22,7 +24,4 @@ description = {
 }
 
 router.include_router(session_handler)
-
-# router.include_router(input_handler)
-
-# router.include_router(segmentation_handler)
+router.include_router(audio_matching_handler)
