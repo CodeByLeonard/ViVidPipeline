@@ -1,19 +1,17 @@
 import re
-
+import starlette.status
+from pathlib import Path
 from yt_dlp import YoutubeDL
-from routes.pipeline.sre.session.session import Clip, current_session
 
-
-def is_vaild_youtube_id(youtube_id: str) -> bool:
+def is_valid_youtube_id(youtube_id: str) -> bool:
     return bool(re.compile(r"^[a-zA-Z0-9_-]{11}$").fullmatch(youtube_id))
 
 def handle_download(youtube_id: str):
-    if not (is_vaild_youtube_id(youtube_id)):
-        return {"status": "failed", "message": "This is not a valid YouTube ID"}
+    if not (is_valid_youtube_id(youtube_id)):
+        return {starlette.status.HTTP_400_BAD_REQUEST}
 
-    from main import cache
+    cache = Path("./cache")
     result = None
-
     def progress_hook(data):
         nonlocal result
         if data["status"] == "finished":
@@ -25,7 +23,7 @@ def handle_download(youtube_id: str):
         "nopart": True,
         "format": "bestvideo[vcodec^=avc1]+bestaudio/best",
         "merge_output_format": "mp4",
-        "outtmpl": f"{cache}/clip_{youtube_id}.%(ext)s",
+        "outtmpl": f"{cache}/{youtube_id}.%(ext)s",
         "progress_hooks": [progress_hook],
     }
 
@@ -37,16 +35,6 @@ def handle_download(youtube_id: str):
             filename = filename[:-5] + ".mp4"
 
     if result is not None:
-        info = result["info_dict"]
-        clip = Clip(
-            filename,
-            info["id"],
-            info["title"],
-            info["description"],
-            info["like_count"],
-            info["view_count"],
-        )
-        current_session.clip = clip
-        return clip
+        return {"success": True, "filepath": f"{filename}"}
     else:
-        return "Well, this shouldn't happen..."
+        return {"success": False, "error": "Well, this shouldn't happen..."}

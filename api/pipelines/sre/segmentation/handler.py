@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
 from proc.segmentation.pyscenedetect import get_segments
-from routes.pipeline.sre.session.session import current_session
-from routes.pipeline.sre.segmentation.segment import Segment
+from pipelines.sre.session.session import current_session
+from pipelines.sre.segmentation.segment import Segment
 
 router = APIRouter(prefix="/segmentation")
 
@@ -15,7 +15,7 @@ def status():
 @router.get("/run")
 def run():
     if (current_session.active is False): return {"success": False, "message": "The Session is not active"}
-    if (current_session.clip is None): return {"success": False, "message": "No clip found in session"}
+    if (current_session.clip is None): return {"success": False, "message": "No clip found in session_mockup"}
     divide_clip()
 
     from proc.segmentation.main import main
@@ -30,19 +30,19 @@ def divide_clip():
 
 @router.get("/test")
 async def test():
-    from routes.pipeline.sre.session.handler import reset
+    from pipelines.sre.session.handler import reset
     reset()
 
-    from routes.pipeline.sre.input.handler import youtube
+    from pipelines.sre.input.handler import youtube
     youtube("Eon2EqOfGbs")
 
     import shutil
-    shutil.copy("routes/pipeline/sre/segmentation/original.mkv", "cache/original.mkv")
-    from routes.pipeline.sre.input.original import Original
+    shutil.copy("routes/pipelines/sre/segmentation/original.mkv", "cache/original.mkv")
+    from pipelines.sre.input.original import Original
     original = Original("cache/original.mkv")
     current_session.original = original
 
-    from routes.pipeline.sre.session.handler import initialize
+    from pipelines.sre.session.handler import initialize
     await initialize()
 
     from proc.segmentation.main import main

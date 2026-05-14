@@ -1679,6 +1679,7 @@ dependencies = [
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "scenedetect" },
+    { name = "starlette" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "yt-dlp" },
 ]
@@ -1690,6 +1691,7 @@ requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.9" },
     { name = "numpy", specifier = ">=2.4.4" },
     { name = "scenedetect", specifier = ">=0.7" },
+    { name = "starlette", specifier = ">=1.0.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.46.0" },
     { name = "yt-dlp", specifier = ">=2026.3.17" },
 ]

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from routes.pipeline.sre.segmentation.segment import Segment
+from pipelines.sre.segmentation.segment import Segment
 
 
 class Clip:

@@ -4,7 +4,7 @@ import base64
 
 from fastapi import UploadFile, File
 
-from routes.pipeline.sre.session.session import Original, current_session
+from pipelines.sre.session.session import Original, current_session
 
 
 async def download_file(file: UploadFile = File(...)):

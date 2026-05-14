@@ -17,7 +17,7 @@ def match(original_view: Scope, clip_view: AudioView, iteration: int, output: bo
 
     clip_energy = np.sum(clip_S ** 2)
 
-    # original.__len__() = session.original_source.get_mel_spectrogram().shape[1]
+    # original.__len__() = session_mockup.original_source.get_mel_spectrogram().shape[1]
     for i in range(0, original_frames - clip_frames, step_frames):
         window = original_S[:, i:i + clip_frames]
 

@@ -2,23 +2,23 @@ import sys
 import uvicorn
 from pathlib import Path
 from fastapi import FastAPI, Request
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+import starlette.status as status
 
-from routes.pipeline.router import router as pipeline_router
+from pipelines.pipelines_router import router as pipelines_router
 
 app = FastAPI()
 
 cache = Path("./cache")
-
-if not cache.exists():
-    cache.mkdir()
-
+if not cache.exists(): cache.mkdir()
 app.mount("/cache", StaticFiles(directory=cache), name="cache")
-app.include_router(pipeline_router)
+
+app.include_router(pipelines_router)
 
 @app.get("/")
 def read_root():
-    return {"debug": False, "Root directory found": "/"}
+    return RedirectResponse(url="/docs", status_code=status.HTTP_302_FOUND)
 
 def create_debug_app():
     debug_app = FastAPI()

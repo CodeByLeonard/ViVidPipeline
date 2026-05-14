@@ -1,0 +1,27 @@
+{
+  "type": "sre",
+  "id": "ff33621f-e6ff-420f-ab2f-682d901da41f",
+  "title": "The Rookie Dim and Juicy",
+  "created_at": "2026-05-14T14:35:15.130831",
+  "session_data": {
+    "original": {
+      "filepath": "./session/input/original.mkv",
+      "fps": 23.976,
+      "resolution": [1920, 1080]
+    },
+    "clip": {
+      "filepath": "./session/input/clip.mp4",
+      "youtube_id": "Eon2EqOfGbs",
+      "title": "",
+      "description": "",
+      "likes": 0,
+      "views": 0
+    }
+  },
+  "status": {
+    "stage": "scope",
+    "state": "processing",
+    "current_task": ""
+  },
+  "version": 1
+}

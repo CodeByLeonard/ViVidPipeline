@@ -3,7 +3,7 @@ from proc.segmentation.matcher import get_matches
 from proc.segmentation.pyscenedetect import fill_timestamps
 from proc.segmentation.source import AudioSource, Scope, SuperSegment
 from proc.segmentation.plot import super_segments_status
-from routes.pipeline.sre.session.session import current_session
+from pipelines.sre.session.session import current_session
 
 import subprocess
 from pathlib import Path
