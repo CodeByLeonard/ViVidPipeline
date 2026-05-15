@@ -142,23 +142,3 @@ class SuperSegment:
         for index, segment in enumerate(self.segments):
             print(f"Index {index}: {segment.__str__()}")
         print("--------- SEGMENT PRINT ---------\n")
-
-def set_scope(original_mono_filepath: str, clip_mono_filepath: str):
-    original_source = AudioSource(path=original_mono_filepath)
-    clip_source = AudioSource(path=clip_mono_filepath)
-
-    from proc.sre.audio_matching.scope import load_scope
-    scope_file = load_scope()
-    scope_segments = [ {"start": scope.start, "end": scope.end} for scope in scope_file.scopes ]
-    scope = Scope(original_source, scope_segments)
-    return original_source, clip_source, scope
-
-def fill_super_segments(super_segments):
-    from proc.sre.audio_matching.modules.matcher import load_matches
-    matches = load_matches()
-    current_super = []
-    for segment in matches.matches:
-        current_super.append(segment)
-        if not segment.back_link:
-            super_segments.append(SuperSegment(current_super))
-            current_super = []

@@ -1,15 +1,15 @@
-from fontTools.misc.plistlib import end_true
-
 from proc.sre.audio_matching.modules.corrections import MatchCorrectionEntry
 from proc.sre.audio_matching.modules.pyscenedetect import load_video_segments
 from proc.sre.audio_matching.modules.source import Scope, AudioView
 from proc.sre.audio_matching.modules.plot import plot_match
 from pydantic import BaseModel
-from pathlib import Path
 import numpy as np
 import json
 
-MATCHES_FILEPATH = Path("./sessions/sre/segmentation/matches.json")
+from proc.sre.audio_matching.scope import get_scope_elements
+from proc.sre.session.paths import SessionSRE
+
+MATCHES_FILEPATH = SessionSRE.SEGMENTATION.MATCHES_JSON
 
 class Match(BaseModel):
     index: int
@@ -32,13 +32,15 @@ def save_matches(file: MatchesFile):
         json.dump(file.model_dump(mode="json"), f, indent=2)
 
 def load_matches() -> MatchesFile:
+    if not MATCHES_FILEPATH.exists():
+        raise FileNotFoundError("Matches does not exist")
     with open(MATCHES_FILEPATH, "r") as f:
         data = json.load(f)
     return MatchesFile.model_validate(data)
 
 def match(
         original_view: Scope, clip_view: AudioView,
-        iteration: int, output: bool=False, output_filepath: str="sessions/sre/artifacts/matches", step_frames: int=1,
+        iteration: int, output: bool=False, output_filepath: str=str(SessionSRE.ARTIFACTS.MATCHES), step_frames: int=1,
         start_limit: float | None = None, end_limit: float | None = None
 ):
     original_S = original_view.get_mel_spectrogram()
@@ -93,7 +95,8 @@ def match(
         plot_match(output, original_view, clip_view, local_time, zoom=3)
     return local_time
 
-def get_matches(clip_source, scope):
+def get_matches():
+    original_source, clip_source, scope = get_scope_elements()
     video_segments = load_video_segments()
     matches: list[Match] = []
 
@@ -142,7 +145,7 @@ def get_rematches(clip_source, scope, match_corrections: list[MatchCorrectionEnt
 
     segment = load_video_segments().video_segments[index]
     clip_view = AudioView(clip_source, segment.clip_start, segment.clip_end)
-    start_time = match(scope, clip_view, index, True, output_filepath="sessions/sre/artifacts/rematches",
+    start_time = match(scope, clip_view, index, True, output_filepath=str(SessionSRE.ARTIFACTS.REMATCHES),
                        start_limit=match_corrections[0].start_match, end_limit=match_corrections[0].end_match)
 
     print("\n")

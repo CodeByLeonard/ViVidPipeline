@@ -10,9 +10,12 @@ from proc.sre.session.status import status
 router = APIRouter(prefix="/session")
 
 @router.post("/init")
-async def init_request(title: str = Form(...), youtube_id: str = Form(...), original_file: UploadFile = File(...)):
+async def init_request(
+        title: str = Form(...), youtube_id: str = Form(...), original_file: UploadFile = File(...),
+        preset_speed: float = Form(...), preset_language: str = Form(...), preset_channel: str = Form(...),
+):
     if Path("./sessions/sre").exists(): return {"A session has already been initialized, it was not overwritten!"}
-    return await initialize(title, youtube_id, original_file)
+    return await initialize(title, youtube_id, original_file, preset_speed, preset_language, preset_channel)
 
 @router.get("/reset")
 def reset_request():

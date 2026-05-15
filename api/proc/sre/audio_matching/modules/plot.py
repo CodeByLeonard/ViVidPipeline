@@ -4,6 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import librosa
 
+from proc.sre.audio_matching.scope import get_scope_elements
+
+
 def cutout_waveform(waveform, start_time, end_time, sample_rate: int=16000):
     return waveform[int(start_time*sample_rate):int(end_time*sample_rate)]
 
@@ -82,7 +85,9 @@ def plot_super_segment(super_segment, clip_source: AudioSource, original_source:
     fig.tight_layout()
     return fig
 
-def super_segments_status(super_segments, clip_source, scope):
+def super_segments_status(super_segments):
+    original_source, clip_source, scope = get_scope_elements()
+
     def plot_separate():
         for index, super_segment in enumerate(super_segments):
             super_segment.print()

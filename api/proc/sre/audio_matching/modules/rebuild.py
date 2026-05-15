@@ -1,7 +1,13 @@
 import subprocess
 from pathlib import Path
 
-def rebuild_original(super_segments, scope, original_mono_filepath):
+from proc.sre.audio_matching.scope import get_scope_elements
+from proc.sre.session.paths import SessionSRE
+
+
+def rebuild_original(super_segments):
+    original_source, clip_source, scope = get_scope_elements()
+    original_mono_filepath = SessionSRE.EXTRACTION.ORIGINAL_MP3
     segment_paths = []
     for index, super_segment in enumerate(super_segments):
         real_duration = super_segment.duration()

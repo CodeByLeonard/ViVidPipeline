@@ -1,10 +1,7 @@
-from pathlib import Path
+from fastapi import APIRouter
 
-from fastapi import APIRouter, HTTPException
-from starlette.responses import FileResponse
-
-from pipelines.sre.session_handler import router as session_handler
 from pipelines.sre.audio_matching_handler import router as audio_matching_handler
+from pipelines.sre.session_handler import router as session_handler
 
 router = APIRouter(prefix="/sre")
 

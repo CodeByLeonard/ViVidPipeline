@@ -1,41 +1,60 @@
 from pathlib import Path
 import shutil
 
-SESSION = Path("./sessions/sre")
+_SESSION_ROOT = Path("./sessions/sre")
+class SessionSRE:
+    ROOT = Path("./sessions/sre")
+    SESSION_JSON = ROOT / "session.json"
 
-ARTIFACTS = SESSION / "artifacts"
-MATCHES = ARTIFACTS / "matches"
-REMATCHES = ARTIFACTS / "rematches"
-SUPER_SEGMENTS = ARTIFACTS / "super_segments"
+    class ARTIFACTS:
+        ROOT = _SESSION_ROOT / "artifacts"
+        MATCHES = ROOT / "matches"
+        REMATCHES = ROOT / "rematches"
+        SUPER_SEGMENTS = ROOT / "super_segments"
 
-INPUT = SESSION / "input"
-OUTPUT = SESSION / "output"
-RECONSTRUCTION = SESSION / "reconstruction"
+    class INPUT:
+        ROOT = _SESSION_ROOT / "input"
 
-SEGMENTATION = SESSION / "segmentation"
-CLIP_SEGMENTS = SEGMENTATION / "clip_segments"
+    class OUTPUT:
+        ROOT = _SESSION_ROOT / "output"
 
-WORKING = SESSION / "working"
-EXTRACTION = WORKING / "extraction"
+    class RECONSTRUCTION:
+        ROOT = _SESSION_ROOT / "reconstruction"
+
+    class SEGMENTATION:
+        ROOT = _SESSION_ROOT / "segmentation"
+        CLIP_SEGMENTS = ROOT / "clip_segments"
+        VIDEO_SEGMENTS_JSON = ROOT / "video_segments.json"
+        SUPER_SEGMENTS_JSON = ROOT / "super_segments.json"
+        SCOPE_JSON = ROOT / "scope.json"
+        MATCHES_JSON = ROOT / "matches.json"
+
+    class EXTRACTION:
+        ROOT = _SESSION_ROOT / "extraction"
+        ORIGINAL_MP3 = ROOT / "original.mp3"
+        CLIP_MP3 = ROOT / "clip.mp3"
+
+    DIRECTORIES = [
+        ROOT,
+        ARTIFACTS.ROOT,
+        ARTIFACTS.MATCHES,
+        ARTIFACTS.REMATCHES,
+        ARTIFACTS.SUPER_SEGMENTS,
+        INPUT.ROOT,
+        OUTPUT.ROOT,
+        RECONSTRUCTION.ROOT,
+        SEGMENTATION.ROOT,
+        SEGMENTATION.CLIP_SEGMENTS,
+        EXTRACTION.ROOT,
+    ]
+
+def reset_workspace():
+    if SessionSRE.ROOT.exists(): shutil.rmtree(SessionSRE.ROOT)
+
+def mkdirs(directories: list[Path]):
+    for directory in directories:
+        directory.mkdir(parents=True, exist_ok=True)
 
 def initialize_workspace():
     reset_workspace()
-    SESSION.mkdir(exist_ok=True)
-
-    ARTIFACTS.mkdir(exist_ok=True)
-    MATCHES.mkdir(exist_ok=True)
-    REMATCHES.mkdir(exist_ok=True)
-    SUPER_SEGMENTS.mkdir(exist_ok=True)
-
-    INPUT.mkdir(exist_ok=True)
-    OUTPUT.mkdir(exist_ok=True)
-    RECONSTRUCTION.mkdir(exist_ok=True)
-
-    SEGMENTATION.mkdir(exist_ok=True)
-    CLIP_SEGMENTS.mkdir(exist_ok=True)
-
-    WORKING.mkdir(exist_ok=True)
-    EXTRACTION.mkdir(exist_ok=True)
-
-def reset_workspace():
-    if SESSION.exists(): shutil.rmtree(SESSION)
+    mkdirs(SessionSRE.DIRECTORIES)

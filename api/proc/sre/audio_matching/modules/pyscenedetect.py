@@ -1,12 +1,10 @@
-import json
-from pathlib import Path
-
-from pydantic import BaseModel
 from scenedetect import detect, AdaptiveDetector, split_video_ffmpeg
 from proc.sre.session.initialize import get_session
-from proc.sre.session.paths import CLIP_SEGMENTS
+from proc.sre.session.paths import SessionSRE
+from pydantic import BaseModel
+import json
 
-VIDEO_SEGMENTS_FILEPATH = Path("./sessions/sre/segmentation/video_segments.json")
+VIDEO_SEGMENTS_FILEPATH = SessionSRE.SEGMENTATION.VIDEO_SEGMENTS_JSON
 
 class VideoSegment(BaseModel):
     index: int
@@ -27,14 +25,14 @@ def load_video_segments() -> VideoSegmentFile:
         data = json.load(f)
     return VideoSegmentFile.model_validate(data)
 
-
 def get_segments(filepath):
     scene_list = detect(filepath, AdaptiveDetector())
     return scene_list
 
 def clip_cut_detect():
-    scene_list = get_segments(get_session().session_data.clip.filepath)
-    split_video_ffmpeg(get_session().session_data.clip.filepath, scene_list, str(CLIP_SEGMENTS))
+    clip_filepath = get_session().session_data.clip.filepath
+    scene_list = get_segments(clip_filepath)
+    split_video_ffmpeg(clip_filepath, scene_list, str(SessionSRE.SEGMENTATION.CLIP_SEGMENTS))
 
     segments: list[VideoSegment] = []
     for index, (scene_start, scene_end) in enumerate(scene_list):
