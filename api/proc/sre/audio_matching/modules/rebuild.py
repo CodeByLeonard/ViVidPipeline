@@ -1,8 +1,9 @@
 import subprocess
 from pathlib import Path
 
-from proc.sre.audio_matching.scope import get_scope_elements
-from proc.sre.session.paths import SessionSRE
+from proc.sre.audio_matching.super_segments import load_super_segments
+from proc.sre.stages.parameters import get_scope_elements
+from proc.sre.paths import SessionSRE
 
 
 def rebuild_original(super_segments):

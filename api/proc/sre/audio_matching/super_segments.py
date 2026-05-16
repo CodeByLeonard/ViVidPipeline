@@ -1,9 +1,9 @@
 from proc.sre.audio_matching.modules.matcher import Match
-from proc.sre.session.paths import SessionSRE
+from proc.sre.paths import SessionSRE
 from pydantic import BaseModel
 import json
 
-SUPER_SEGMENT_FILEPATH = SessionSRE.SEGMENTATION.SUPER_SEGMENTS_JSON
+SUPER_SEGMENT_FILEPATH = SessionSRE.MATCHER.SUPER_SEGMENTS_JSON
 
 class SuperSegmentModel(BaseModel):
     matches: list[Match]
@@ -39,38 +39,21 @@ def fill_super_segments():
             super_segments.append(SuperSegmentModel(matches=current))
             current = []
     save_super_segments(SuperSegmentsFile(super_segments=super_segments))
+    return load_super_segments()
 
-# from proc.sre.audio_matching.modules.source import AudioSource, Scope
-# class SuperSegment:
-#     def __init__(self, segments):
-#         self.segments = segments
-#
-#     def ignored_duration(self):
-#          return sum(
-#              segment.ignored_offset
-#              for segment in self.segments
-#          )
-#
-#     def get_scope(self, source: AudioSource):
-#         timestamps = []
-#         for segment in self.segments:
-#             timestamps.append({"start": segment.start, "end": segment.end})
-#         return Scope(source, timestamps)
-#
-#     def start(self):
-#         return self.segments[0].start
-#
-#     def end(self):
-#         return self.segments[-1].end
-#
-#     def duration(self):
-#         return self.end() - self.start()
-#
-#     def corrected_duration(self):
-#         return self.duration() + self.ignored_duration()
-#
-#     def print(self):
-#         print("\n--------- SEGMENT PRINT ---------")
-#         for index, segment in enumerate(self.segments):
-#             print(f"Index {index}: {segment.__str__()}")
-#         print("--------- SEGMENT PRINT ---------\n")
+def print_super_segments():
+    print("\n--------- SEGMENT PRINT ---------")
+    for index, segment in enumerate(load_super_segments().super_segments):
+        print(f"Index {index}: {segment.__str__()}")
+    print("--------- SEGMENT PRINT ---------\n")
+
+# SUPER SEGMENT START = self.segments[0].start
+# SUPER SEGMENT END = self.segments[-1].end
+# SUPER SEGMENT DURATION = self.end() - self.start()
+# IGNORED DURATION = sum(segment.ignored_offset) for segment in self.segments
+# SUPER SEGMENT CORRECTED DURATION = self.duration() + self.ignored_duration()
+# def get_scope(self, source: AudioSource):
+#     timestamps = []
+#     for segment in self.segments:
+#         timestamps.append({"start": segment.start, "end": segment.end})
+#     return Scope(source, timestamps)

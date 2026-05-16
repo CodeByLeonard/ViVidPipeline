@@ -3,19 +3,17 @@ from pathlib import Path
 from fastapi import APIRouter, Form, UploadFile, File
 from starlette.status import HTTP_200_OK
 
-from proc.sre.session.initialize import initialize
-from proc.sre.session.paths import reset_workspace
-from proc.sre.session.status import status
+from proc.sre.stages.session import init_session, get_session
+from proc.sre.paths import reset_workspace
 
 router = APIRouter(prefix="/session")
 
 @router.post("/init")
 async def init_request(
         title: str = Form(...), youtube_id: str = Form(...), original_file: UploadFile = File(...),
-        preset_speed: float = Form(...), preset_language: str = Form(...), preset_channel: str = Form(...),
 ):
     if Path("./sessions/sre").exists(): return {"A session has already been initialized, it was not overwritten!"}
-    return await initialize(title, youtube_id, original_file, preset_speed, preset_language, preset_channel)
+    return await init_session(title, youtube_id, original_file)
 
 @router.get("/reset")
 def reset_request():
@@ -24,5 +22,4 @@ def reset_request():
 
 @router.get("/status")
 def status_request():
-    return status("./sessions/sre/session.json")
-
+    return get_session()

@@ -1,15 +1,15 @@
-from proc.sre.audio_matching.modules.corrections import MatchCorrectionEntry
-from proc.sre.audio_matching.modules.pyscenedetect import load_video_segments
+from proc.sre.stages.pyscenedetect import load_video_segments
 from proc.sre.audio_matching.modules.source import Scope, AudioView
 from proc.sre.audio_matching.modules.plot import plot_match
 from pydantic import BaseModel
 import numpy as np
 import json
 
-from proc.sre.audio_matching.scope import get_scope_elements
-from proc.sre.session.paths import SessionSRE
+from proc.sre.stages.parameters import get_scope_elements
+from proc.sre.paths import SessionSRE
+from proc.sre.stages.session import get_session
 
-MATCHES_FILEPATH = SessionSRE.SEGMENTATION.MATCHES_JSON
+MATCHES_FILEPATH = SessionSRE.MATCHER.MATCHES_JSON
 
 class Match(BaseModel):
     index: int
@@ -40,7 +40,7 @@ def load_matches() -> MatchesFile:
 
 def match(
         original_view: Scope, clip_view: AudioView,
-        iteration: int, output: bool=False, output_filepath: str=str(SessionSRE.ARTIFACTS.MATCHES), step_frames: int=1,
+        iteration: int, output: bool=False, output_filepath: str=str(SessionSRE.MATCHER.MATCHES), step_frames: int=1,
         start_limit: float | None = None, end_limit: float | None = None
 ):
     original_S = original_view.get_mel_spectrogram()
@@ -96,6 +96,9 @@ def match(
     return local_time
 
 def get_matches():
+    if not get_session().status.stage == "matching":
+        return "Session not in MATCHING stage!"
+
     original_source, clip_source, scope = get_scope_elements()
     video_segments = load_video_segments()
     matches: list[Match] = []
@@ -135,8 +138,9 @@ def get_matches():
         print("\n")
 
     save_matches(MatchesFile(matches=matches))
+    return load_matches()
 
-def get_rematches(clip_source, scope, match_corrections: list[MatchCorrectionEntry]):
+def get_rematches(clip_source, scope, match_corrections: list[None]):
     correction = match_corrections[0]
     index = correction.match
 
@@ -145,7 +149,7 @@ def get_rematches(clip_source, scope, match_corrections: list[MatchCorrectionEnt
 
     segment = load_video_segments().video_segments[index]
     clip_view = AudioView(clip_source, segment.clip_start, segment.clip_end)
-    start_time = match(scope, clip_view, index, True, output_filepath=str(SessionSRE.ARTIFACTS.REMATCHES),
+    start_time = match(scope, clip_view, index, True, output_filepath=str(SessionSRE.MATCHER.REMATCHES),
                        start_limit=match_corrections[0].start_match, end_limit=match_corrections[0].end_match)
 
     print("\n")

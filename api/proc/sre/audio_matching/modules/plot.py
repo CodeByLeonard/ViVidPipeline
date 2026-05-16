@@ -1,11 +1,8 @@
 from proc.sre.audio_matching.modules.source import AudioSource, MatcherView, Scope
-
+from proc.sre.stages.parameters import get_scope_elements
 import numpy as np
 import matplotlib.pyplot as plt
 import librosa
-
-from proc.sre.audio_matching.scope import get_scope_elements
-
 
 def cutout_waveform(waveform, start_time, end_time, sample_rate: int=16000):
     return waveform[int(start_time*sample_rate):int(end_time*sample_rate)]

@@ -1,6 +1,6 @@
 from scenedetect import detect, AdaptiveDetector, split_video_ffmpeg
-from proc.sre.session.initialize import get_session
-from proc.sre.session.paths import SessionSRE
+from proc.sre.stages.session import get_session
+from proc.sre.paths import SessionSRE
 from pydantic import BaseModel
 import json
 
@@ -30,6 +30,9 @@ def get_segments(filepath):
     return scene_list
 
 def clip_cut_detect():
+    if not get_session().status.stage == "clip cut detect":
+        return "Session not in CLIP CUT DETECT stage!"
+
     clip_filepath = get_session().session_data.clip.filepath
     scene_list = get_segments(clip_filepath)
     split_video_ffmpeg(clip_filepath, scene_list, str(SessionSRE.SEGMENTATION.CLIP_SEGMENTS))
@@ -45,3 +48,4 @@ def clip_cut_detect():
             )
         )
     save_video_segments(VideoSegmentFile(video_segments=segments))
+    return load_video_segments()

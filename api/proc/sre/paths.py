@@ -6,14 +6,18 @@ class SessionSRE:
     ROOT = Path("./sessions/sre")
     SESSION_JSON = ROOT / "session.json"
 
-    class ARTIFACTS:
-        ROOT = _SESSION_ROOT / "artifacts"
-        MATCHES = ROOT / "matches"
-        REMATCHES = ROOT / "rematches"
-        SUPER_SEGMENTS = ROOT / "super_segments"
+    class MATCHER:
+        ROOT = _SESSION_ROOT / "matcher"
+        MATCHES = ROOT / "plot_matches"
+        REMATCHES = ROOT / "plot_rematches"
+        SUPER_SEGMENTS = ROOT / "plot_super_segments"
+        MATCHES_JSON = ROOT / "matches.json"
+        SUPER_SEGMENTS_JSON = ROOT / "super_segments.json"
 
     class INPUT:
         ROOT = _SESSION_ROOT / "input"
+        CLIP = ROOT / "clip.mp4"
+        ORIGINAL = ROOT / "original.wav"
 
     class OUTPUT:
         ROOT = _SESSION_ROOT / "output"
@@ -24,22 +28,20 @@ class SessionSRE:
     class SEGMENTATION:
         ROOT = _SESSION_ROOT / "segmentation"
         CLIP_SEGMENTS = ROOT / "clip_segments"
-        VIDEO_SEGMENTS_JSON = ROOT / "video_segments.json"
-        SUPER_SEGMENTS_JSON = ROOT / "super_segments.json"
-        SCOPE_JSON = ROOT / "scope.json"
-        MATCHES_JSON = ROOT / "matches.json"
+        VIDEO_SEGMENTS_JSON = ROOT / "clip_segments.json"
 
     class EXTRACTION:
         ROOT = _SESSION_ROOT / "extraction"
         ORIGINAL_MP3 = ROOT / "original.mp3"
         CLIP_MP3 = ROOT / "clip.mp3"
+        PARAMETERS_JSON = ROOT / "parameters.json"
 
     DIRECTORIES = [
         ROOT,
-        ARTIFACTS.ROOT,
-        ARTIFACTS.MATCHES,
-        ARTIFACTS.REMATCHES,
-        ARTIFACTS.SUPER_SEGMENTS,
+        MATCHER.ROOT,
+        MATCHER.MATCHES,
+        MATCHER.REMATCHES,
+        MATCHER.SUPER_SEGMENTS,
         INPUT.ROOT,
         OUTPUT.ROOT,
         RECONSTRUCTION.ROOT,

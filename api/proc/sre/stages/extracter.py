@@ -1,15 +1,24 @@
-from proc.sre.session import paths
-from proc.sre.session.initialize import get_session, SessionData
+from proc.sre import paths
+from proc.sre.stages.parameters import load_params
+from proc.sre.stages.session import get_session, save_session
 import subprocess
 import re
 
+def initial_extraction():
+    result = extract()
+    session = get_session()
+    session.status.stage = "clip cut detect"
+    save_session(session)
+    if result: return {"Successful extraction, move to match."}
+    else: return {"Error during extraction, check the logs."}
+
 def extract():
-    session_data = get_session().session_data
-    if original(session_data) and clip(session_data): return True
+    if original() and clip(): return True
     else: return False
 
-def probe_original_stream(session_data: SessionData=get_session().session_data):
-    language = session_data.preset.language
+def probe_original_stream():
+    session_data = get_session().session_data
+    language = load_params().preset.language
     probe = ["ffprobe", "-i", session_data.original.filepath]
     result = subprocess.run(probe, capture_output=True, text=True)
 
@@ -21,12 +30,15 @@ def probe_original_stream(session_data: SessionData=get_session().session_data):
             if match: stream_number = match.group(1); break
     return stream_number
 
-def original(session_data: SessionData=get_session().session_data):
-    speed_preset = session_data.preset.speed
-    language = session_data.preset.language
-    channel = session_data.preset.channel
+def original():
+    session_data = get_session().session_data
+    preset = load_params().preset
 
-    stream_number = probe_original_stream(session_data)
+    speed_preset = preset.speed
+    language = preset.language
+    channel = preset.channel
+
+    stream_number = probe_original_stream()
     if stream_number is None:
         print(f"[EXTRACTION: Original] No ({language}) audio stream found.")
         return False
@@ -47,7 +59,8 @@ def original(session_data: SessionData=get_session().session_data):
         print(f"[Extraction: Original] FAILED: \n{ffmpeg_result.stderr}\n")
         return False
 
-def clip(session_data: SessionData=get_session().session_data):
+def clip():
+    session_data = get_session().session_data
     ffmpeg_command = [
         "ffmpeg", "-y",
         "-i", session_data.clip.filepath,

@@ -490,6 +490,12 @@ wheels = [
 ]
 
 [[package]]
+name = "get-params"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/3b/35/0f4642331e2b124eaea5bcef167b04d5938c01d8f59118770214aa439878/get-params-0.1.1.tar.gz", hash = "sha256:78d601283a696742eaaa9f4b7184e901efb3aecca2a343555f5fb156532fd485", size = 2812, upload-time = "2024-04-03T21:30:44.71Z" }
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1675,6 +1681,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
+    { name = "get-params" },
     { name = "librosa" },
     { name = "matplotlib" },
     { name = "numpy" },
@@ -1687,6 +1694,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.136.1" },
+    { name = "get-params", specifier = ">=0.1.1" },
     { name = "librosa", specifier = ">=0.11.0" },
     { name = "matplotlib", specifier = ">=3.10.9" },
     { name = "numpy", specifier = ">=2.4.4" },
