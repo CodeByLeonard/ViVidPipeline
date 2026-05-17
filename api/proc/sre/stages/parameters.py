@@ -47,15 +47,3 @@ async def init_params(request: ParametersRequest):
 
     session.status.stage = "extraction"
     save_session(session)
-
-# TODO: SAVE SPECTROGRAMS AND WAVEFORMS IN FILES!
-def get_scope_elements():
-    from proc.sre.audio_matching.modules.source import AudioSource, Scope
-    from proc.sre.paths import SessionSRE
-
-    original_source = AudioSource(path=str(SessionSRE.EXTRACTION.ORIGINAL_MP3))
-    clip_source = AudioSource(path=str(SessionSRE.EXTRACTION.CLIP_MP3))
-
-    scope_segments = [ {"start": scope.start, "end": scope.end} for scope in load_params().scopes ]
-    scope = Scope(original_source, scope_segments)
-    return original_source, clip_source, scope

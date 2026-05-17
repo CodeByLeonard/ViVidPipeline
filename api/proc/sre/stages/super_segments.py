@@ -1,4 +1,4 @@
-from proc.sre.audio_matching.modules.matcher import Match
+from proc.sre.stages.matcher import Match
 from proc.sre.paths import SessionSRE
 from pydantic import BaseModel
 import json
@@ -27,7 +27,7 @@ def load_super_segments() -> SuperSegmentsFile:
     return SuperSegmentsFile.model_validate(data)
 
 def fill_super_segments():
-    from proc.sre.audio_matching.modules.matcher import load_matches
+    from proc.sre.stages.matcher import load_matches
     matches = load_matches().matches
     super_segments: list[SuperSegmentModel] = []
     current: list[Match] = []
@@ -46,14 +46,3 @@ def print_super_segments():
     for index, segment in enumerate(load_super_segments().super_segments):
         print(f"Index {index}: {segment.__str__()}")
     print("--------- SEGMENT PRINT ---------\n")
-
-# SUPER SEGMENT START = self.segments[0].start
-# SUPER SEGMENT END = self.segments[-1].end
-# SUPER SEGMENT DURATION = self.end() - self.start()
-# IGNORED DURATION = sum(segment.ignored_offset) for segment in self.segments
-# SUPER SEGMENT CORRECTED DURATION = self.duration() + self.ignored_duration()
-# def get_scope(self, source: AudioSource):
-#     timestamps = []
-#     for segment in self.segments:
-#         timestamps.append({"start": segment.start, "end": segment.end})
-#     return Scope(source, timestamps)

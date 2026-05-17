@@ -1,8 +1,11 @@
-from proc.sre.audio_matching.modules.matcher import get_matches
-from proc.sre.audio_matching.super_segments import fill_super_segments
-from proc.sre.stages.extracter import initial_extraction
-from proc.sre.stages.parameters import init_params, ParametersRequest
+from proc.sre.audio_matching.modules.rebuild import rebuild_original
+from proc.sre.stages.matcher import get_matches
+from proc.sre.stages.super_segment_plot import super_segments_status
+from proc.sre.stages.super_segments import fill_super_segments
+from proc.sre.stages.source import init_source_file, init_sources
 from proc.sre.stages.pyscenedetect import clip_cut_detect
+from proc.sre.stages.parameters import init_params, ParametersRequest
+from proc.sre.stages.extracter import initial_extraction
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/am")
@@ -12,8 +15,10 @@ router = APIRouter(prefix="/am")
 # MERGED WITH EXTRACTION STEP
 @router.post("/params")
 async def parameters_request(request: ParametersRequest):
+    init_source_file()
     await init_params(request)
-    return initial_extraction()
+    initial_extraction() # return initial_extraction()
+    init_sources()
 
 # A VISUAL CHECK CAN BE BUILD IN IF PREFERABLE,
 # TO CHECK THE SCOPE SET CORRECTLY
@@ -35,28 +40,10 @@ async def match_request():
 async def match_correct_request():
     return "This function has not been implemented yet!"
 
-# def rematch():
-#     corrections = load_corrections()
-#     from proc.sre.audio_matching.modules.source import set_scope
-#     original_source, clip_source, scope = set_scope(original_mono_filepath, clip_mono_filepath)
-#     print(f"[RE-MATCHER] Initiated Rematch! Manual Corrections:")
-#     for index, correction in enumerate(corrections):
-#         print(f"Correction {index}: \n{correction}")
-#         get_rematches(clip_source, scope, corrections.match_corrections)
-#
-#     print("\n")
-#     super_segments = []
-#     from proc.sre.audio_matching.modules.source import fill_super_segments
-#     fill_super_segments(super_segments)
-#     from proc.sre.audio_matching.modules.plot import super_segments_status
-#     super_segments_status(super_segments, clip_source, scope)
-#     rebuild_original(super_segments, scope, original_mono_filepath)
-#     return
-
 @router.get("/super_segments")
 async def super_segments_request():
-    return fill_super_segments()
-# MISSING HERE IS SUPER SEGMENT STATUS, WHICH PLOTS AND OUTPUTS THE SUPER SEGMENTS TO CONSOLE, LOCATED IN PLOT.PY!
+    fill_super_segments()
+    super_segments_status()
 
 @router.get("/super_segments_correct")
 async def super_segments_correct_request():
@@ -64,5 +51,5 @@ async def super_segments_correct_request():
 
 @router.get("/rebuild")
 async def rebuild_request():
-    return "This function has not been implemented yet!"
+    rebuild_original()
 # FUNCTIONS REBUILD_ORIGINAL WAS USED IN MAIN.PY FROM REBUILD.PY

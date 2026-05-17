@@ -1,17 +1,14 @@
-import json
-import uuid
-from pathlib import Path
-
+from proc.sre.paths import SessionSRE, reset_workspace, initialize_workspace
+from proc.preview.youtube import download_youtube
 from fastapi import UploadFile, HTTPException
+from yt_dlp.utils import DownloadError
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Tuple
-
-from yt_dlp.utils import DownloadError
-
-from proc.preview.youtube import download_youtube
-from proc.sre.audio_matching.ffprobe import get_video_metadata
-from proc.sre.paths import SessionSRE, reset_workspace, initialize_workspace
+from pathlib import Path
+import subprocess
+import json
+import uuid
 
 class Original(BaseModel):
     filepath: str
@@ -119,3 +116,34 @@ def get_session() -> Session:
 def save_session(session: Session):
     with open(SessionSRE.SESSION_JSON, "w") as f:
         json.dump(session.model_dump(mode="json"), f, indent=2)
+
+def get_video_metadata(filepath: str) -> tuple[float, tuple[int, int]]:
+    command = [
+        "ffprobe",
+        "-v", "error",
+        "-select_streams", "v:0",
+        "-show_entries",
+        "stream=r_frame_rate,width,height",
+        "-of", "json",
+        filepath
+    ]
+
+    result = subprocess.run(
+        command,
+        capture_output=True,
+        text=True
+    )
+
+    data = json.loads(result.stdout)
+
+    stream = data["streams"][0]
+
+    width = stream["width"]
+    height = stream["height"]
+
+    fps_raw = stream["r_frame_rate"]
+
+    numerator, denominator = map(int, fps_raw.split("/"))
+    fps = numerator / denominator
+
+    return fps, (width, height)
